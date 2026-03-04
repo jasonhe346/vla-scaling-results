@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combined Experiment Results — All Evaluations</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{--bg:#0f1117;--card:#1a1d27;--border:#2a2d3a;--text:#e1e4ed;--muted:#8b8fa3;--accent:#ffb86c;--accent2:#6cb4ff;--accent3:#ff6c8a;--accent4:#22c55e;--accent5:#b38cff}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding:2rem}
+  .container{max-width:1400px;margin:0 auto}
+  h1{font-size:1.8rem;font-weight:700;margin-bottom:.3rem;background:linear-gradient(135deg,#ffb86c,#6cb4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  h2{font-size:1.15rem;font-weight:600;margin-bottom:.5rem;color:var(--text)}
+  h3{font-size:.95rem;font-weight:600;margin:1rem 0 .5rem;color:var(--muted)}
+  .subtitle{color:var(--muted);font-size:.88rem;margin-bottom:2rem;line-height:1.5}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+  .chart-box{position:relative;width:100%;height:420px}
+  .chart-box.tall{height:500px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;font-size:.8rem}
+  th,td{padding:.4rem .55rem;text-align:center;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0;background:var(--card)}
+  td.best{color:var(--accent4);font-weight:700}
+  td.warn{color:var(--accent3)}
+  td.flag{color:var(--accent);font-size:.7rem}
+  .note{color:var(--muted);font-size:.78rem;margin-top:.5rem}
+  .stat-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.3rem;flex:1;min-width:180px}
+  .stat-label{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
+  .stat-val{font-size:1.5rem;font-weight:700;margin-top:.2rem}
+  .stat-sub{color:var(--muted);font-size:.75rem}
+  .nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
+  .nav a{color:var(--accent2);text-decoration:none;font-size:.82rem;padding:.3rem .7rem;border:1px solid var(--border);border-radius:6px;transition:all .15s}
+  .nav a:hover{background:var(--border);border-color:var(--accent2)}
+  .section-divider{border:none;border-top:1px solid var(--border);margin:2rem 0}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Combined Experiment Results — All Evaluations</h1>
+<p class="subtitle">
+  PaliGemma-3B | LIBERO-Object "pick up the butter and place it in the basket"<br>
+  200hr + 66hr Ego-10K pretraining | 5/10/25/50 demos | Seeds 42-47 | ~200 eval JSON files from H100 + A100
+</p>
+
+<div class="nav">
+  <a href="#s1">1. Vary S1 Steps</a>
+  <a href="#s2">2. Demo Scaling 200hr</a>
+  <a href="#s3">3. Demo Scaling 66hr</a>
+  <a href="#s4">4. 66hr vs 200hr</a>
+  <a href="#s5">5. Extended Seeds</a>
+  <a href="#s6">6. Skeleton</a>
+  <a href="#s7">7. Checkpoint Sweep</a>
+  <a href="#s8">8. Ablation</a>
+  <a href="#s9">9. Master Table</a>
+  <a href="#s10">10. Top Performers</a>
+  <a href="#s11">11. Key Findings</a>
+</div>
+
+<!-- STAT CARDS -->
+<div class="stat-row">
+  <div class="stat"><div class="stat-label">Best Condition</div><div class="stat-val" style="color:#22c55e">58.1%</div><div class="stat-sub">200hr 25K @ 10d (6.0pp range)</div></div>
+  <div class="stat"><div class="stat-label">Total Eval Runs</div><div class="stat-val">~200</div><div class="stat-sub">JSON files across H100 + A100</div></div>
+  <div class="stat"><div class="stat-label">Conditions Tested</div><div class="stat-val">33</div><div class="stat-sub">Latent action (master table)</div></div>
+  <div class="stat"><div class="stat-label">Max Seeds</div><div class="stat-val">6</div><div class="stat-sub">Baseline & 60K @ 50d</div></div>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 1: VARY PRETRAINING STEPS -->
+<div id="s1" class="card">
+  <h2>1. Vary Pretraining Steps (200hr, 50 Demos)</h2>
+  <div class="chart-box tall"><canvas id="varyStepsChart"></canvas></div>
+  <p class="note">3-seed mean ± range shown. Baseline (6 seeds) = 36.3%. Peak at 5K (46.7%) and 75K (46.3%).</p>
+</div>
+
+<div class="card">
+  <h2>Per-Seed Breakdown (200hr, 50 Demos)</h2>
+  <table id="varyStepsTable"></table>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 2: DEMO SCALING 200hr -->
+<div id="s2" class="card">
+  <h2>2. Demo Scaling — 200hr Pretraining</h2>
+  <div class="chart-box tall"><canvas id="demo200Chart"></canvas></div>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h2>200hr Demo Scaling Lines</h2>
+    <div class="chart-box"><canvas id="demo200Lines"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>200hr Pretraining Scaling Lines</h2>
+    <div class="chart-box"><canvas id="pretrain200Lines"></canvas></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>200hr Per-Seed Tables</h2>
+  <h3>5 Demos</h3><table id="t200_5d"></table>
+  <h3>10 Demos</h3><table id="t200_10d"></table>
+  <h3>25 Demos</h3><table id="t200_25d"></table>
+  <h3>50 Demos</h3><table id="t200_50d"></table>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 3: DEMO SCALING 66hr -->
+<div id="s3" class="card">
+  <h2>3. Demo Scaling — 66hr Pretraining</h2>
+  <div class="chart-box tall"><canvas id="demo66Chart"></canvas></div>
+</div>
+
+<div class="card">
+  <h2>66hr Per-Seed Tables</h2>
+  <h3>5 Demos</h3><table id="t66_5d"></table>
+  <h3>10 Demos</h3><table id="t66_10d"></table>
+  <h3>25 Demos</h3><table id="t66_25d"></table>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 4: 66hr vs 200hr -->
+<div id="s4" class="card">
+  <h2>4. 66hr vs 200hr Comparison</h2>
+  <div class="chart-box tall"><canvas id="compareChart"></canvas></div>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 5: EXTENDED SEEDS -->
+<div id="s5" class="card">
+  <h2>5. Extended Seeds — Baseline, 60K, 75K (200hr, 50 Demos)</h2>
+  <div class="chart-box"><canvas id="extSeedsChart"></canvas></div>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 6: SKELETON -->
+<div id="s6" class="card">
+  <h2>6. Skeleton vs Latent Action Pretraining</h2>
+  <div class="chart-box"><canvas id="skeletonChart"></canvas></div>
+  <p class="note">Skeleton pretraining (pose estimation) consistently underperforms latent action. Best skeleton: 34.9% (25K, 200hr) vs best latent action: 46.0% (60K, 200hr, seed 42).</p>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 7: CHECKPOINT SWEEP -->
+<div id="s7" class="grid2">
+  <div class="card">
+    <h2>7a. Checkpoint Sweep — 200hr, 10d</h2>
+    <div class="chart-box"><canvas id="ckpt200Chart"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>7b. Checkpoint Sweep — 66hr, 10d</h2>
+    <div class="chart-box"><canvas id="ckpt66Chart"></canvas></div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 8: ABLATION -->
+<div id="s8" class="card">
+  <h2>8. Seed 42 Ablation — Run-to-Run Variance (200hr, 50d)</h2>
+  <div class="chart-box"><canvas id="ablationChart"></canvas></div>
+  <p class="note">Same seed 42 model evaluated independently on different instances. Deltas of 10-29pp confirm single-seed results are unreliable.</p>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 9: MASTER TABLE -->
+<div id="s9" class="card">
+  <h2>9. Master Comparison Table</h2>
+  <p class="note" style="margin-bottom:.8rem">All latent action conditions, sorted by pretrain hours → demos → steps. Cells with &lt;3 seeds flagged.</p>
+  <table id="masterTable"></table>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 10: TOP PERFORMERS -->
+<div id="s10" class="card">
+  <h2>10. Top 15 Performers (3+ Seeds)</h2>
+  <div class="chart-box"><canvas id="topChart"></canvas></div>
+  <table id="topTable"></table>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 11: KEY FINDINGS -->
+<div id="s11" class="card">
+  <h2>11. Key Findings</h2>
+  <div id="findings" style="font-size:.88rem;line-height:1.8"></div>
+</div>
+
+</div><!-- container -->
+
+<script>
+Chart.defaults.font={family:"'Inter',sans-serif",size:11};
+Chart.defaults.color='#8b8fa3';
+const gc='#2a2d3a';
+const C={bl:'#8b8fa3',p5k:'#ff6c8a',p25k:'#ffb86c',p40k:'#b38cff',p60k:'#6cb4ff',p75k:'#22c55e',
+  c66:'#ffb86c',c200:'#6cb4ff',skel:'#ff6c8a',la:'#6cb4ff'};
+
+// ============================================================
+// DATA
+// ============================================================
+
+// Section 1: Vary pretraining steps (200hr, 50 demos)
+const VS={
+  steps:[0,2500,5000,10000,15000,25000,35000,40000,50000,60000,65000,70000,75000],
+  labels:['BL','2.5K','5K','10K','15K','25K','35K','40K','50K','60K','65K','70K','75K'],
+  means:[36.3,34.6,46.7,36.8,42.5,44.5,36.3,42.6,42.0,43.0,34.2,41.5,46.3],
+  seeds:[6,3,3,3,3,3,3,3,3,6,3,3,4],
+  ranges:[33.0,22.0,6.2,5.3,9.4,21.2,14.5,20.7,26.0,11.0,15.0,8.5,17.4],
+  perSeed:{
+    42:[32.7,37.8,43.9,40.1,38.6,42.8,38.5,29.3,58.0,46.0,40.5,39.0,56.4],
+    43:[24.9,22.0,50.1,35.6,48.0,56.0,28.0,50.0,32.0,45.2,25.5,38.5,39.0],
+    44:[57.9,44.0,46.2,34.8,40.8,34.8,42.5,48.5,36.0,43.4,36.5,47.0,null],
+    45:[31.8,null,null,null,null,null,null,null,null,44.9,null,null,47.1],
+    46:[37.6,null,null,null,null,null,null,null,null,35.0,null,null,42.6],
+    47:[32.9,null,null,null,null,null,null,null,null,43.7,null,null,null]
+  }
+};
+
+// Section 2: Demo scaling 200hr
+const D200={
+  baseline:      {5:[33.6,40.4,41.6],10:[63.2,45.6],25:[40.8,30.8,52.0],50:[32.7,24.3]},
+  pretrained_5K: {10:[40.8,44.4,30.0],25:[52.0,48.0,56.0],50:[43.9,50.1]},
+  pretrained_25K:{10:[54.4,59.6,60.4],25:[28.8,64.8,51.6],50:[42.8,56.0]},
+  pretrained_40K:{25:[56.0,51.6]},
+  pretrained_60K:{5:[72.4,44.4,30.0],10:[64.0,61.2,35.2],25:[41.6,57.6,57.6],50:[46.0,45.1]}
+};
+
+// Section 3: Demo scaling 66hr
+const D66={
+  baseline:      {10:[58.8,57.2]},
+  pretrained_5K: {10:[58.4,50.4,48.0],25:[51.6,41.6,49.6]},
+  pretrained_25K:{10:[54.4,48.8,35.2],25:[51.2,40.8,46.4]},
+  pretrained_40K:{25:[60.0,41.6]},
+  pretrained_60K:{5:[41.6,54.4,20.0],10:[66.0,50.0,27.2],25:[53.2,54.0,44.4]}
+};
+
+// Section 6: Skeleton
+const SKEL={
+  s200:{2500:30.0,5000:6.4,10000:31.0,15000:20.8,25000:34.9,40000:23.0,60000:31.2},
+  s66: {2500:29.2,5000:8.9,10000:29.9,15000:19.8,25000:33.1,40000:23.9,60000:30.2},
+  la:  {2500:37.8,5000:43.9,10000:40.1,15000:38.6,25000:42.8,40000:29.3,60000:46.0}
+};
+
+// Section 7: Checkpoint sweep
+const CK200={bl:[57.6,50.4,49.6,61.6,63.2],pt:[61.2,42.8,52.4,46.4,64.0]};
+const CK66= {bl:[54.0,50.4,44.8,53.2,58.8],pt:[47.2,60.8,45.2,50.8,66.0]};
+
+// Section 8: Ablation
+const ABL={
+  steps:['BL','2.5K','5K','10K','15K','40K','60K','75K'],
+  ablation:[45.6,41.6,46.0,47.6,46.8,44.0,34.8,56.4],
+  original:[32.7,37.8,43.9,40.1,38.6,29.3,46.0,27.5]
+};
+
+// Section 10: Top performers
+const TOP=[
+  {l:'200hr 25K 10d',v:58.1,r:6.0},{l:'200hr 60K 10d',v:53.5,r:28.8},
+  {l:'66hr 5K 10d',v:52.3,r:10.4},{l:'200hr 60K 25d',v:52.3,r:16.0},
+  {l:'200hr 5K 25d',v:52.0,r:8.0},{l:'66hr 60K 25d',v:50.5,r:9.6},
+  {l:'200hr 60K 5d',v:48.9,r:42.4},{l:'66hr 60K 10d',v:47.7,r:38.8},
+  {l:'66hr 5K 25d',v:47.6,r:10.0},{l:'200hr 5K 50d',v:46.7,r:6.2},
+  {l:'66hr 25K 25d',v:46.1,r:10.4},{l:'66hr 25K 10d',v:46.1,r:19.2},
+  {l:'200hr 25K 50d',v:44.5,r:21.2},{l:'200hr 60K 50d',v:43.0,r:11.0},
+  {l:'200hr 75K 50d',v:42.9,r:8.1}
+];
+
+// Helpers
+const avg=a=>a.reduce((s,v)=>s+v,0)/a.length;
+const rng=a=>Math.max(...a)-Math.min(...a);
+const pct=v=>v!=null?(v).toFixed(1)+'%':'—';
+const mkOpts=(yMin,yMax,yLabel,extra)=>({responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12,font:{size:11}}},...(extra||{})},
+  scales:{y:{min:yMin,max:yMax,title:{display:true,text:yLabel},grid:{color:gc},ticks:{callback:v=>v+'%'}},
+    x:{grid:{color:gc}}}});
+
+// ============================================================
+// CHART 1: VARY PRETRAINING STEPS
+// ============================================================
+new Chart(document.getElementById('varyStepsChart'),{
+  type:'line',
+  data:{labels:VS.labels,datasets:[
+    {label:'3-seed Mean',data:VS.means,borderColor:C.c200,backgroundColor:C.c200+'33',pointBackgroundColor:VS.seeds.map(s=>s>=3?C.c200:'#ffb86c'),
+     pointRadius:VS.seeds.map(s=>s>=6?8:s>=4?7:6),borderWidth:2.5,tension:.3,fill:false},
+    {label:'Seed Range (pp)',data:VS.ranges,borderColor:'#ff6c8a66',backgroundColor:'#ff6c8a22',
+     pointRadius:0,borderWidth:1,borderDash:[4,4],tension:.3,fill:true,yAxisID:'y2'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}},
+      annotation:{annotations:{bl:{type:'line',yMin:36.3,yMax:36.3,borderColor:'#8b8fa366',borderWidth:1,borderDash:[6,3],
+        label:{display:true,content:'Baseline 36.3%',position:'start',color:'#8b8fa3',font:{size:10}}}}}},
+    scales:{y:{min:25,max:55,title:{display:true,text:'Mean SR (%)'},grid:{color:gc},ticks:{callback:v=>v+'%'}},
+      y2:{position:'right',min:0,max:40,title:{display:true,text:'Seed Range (pp)'},grid:{display:false},ticks:{callback:v=>v+'pp'}},
+      x:{title:{display:true,text:'S1 Pretraining Steps'},grid:{color:gc}}}}
+});
+
+// ============================================================
+// CHART 2: DEMO SCALING 200hr (grouped bar)
+// ============================================================
+const M200=Object.keys(D200);
+const ML200=['Baseline','5K','25K','40K','60K'];
+const demos200=[5,10,25,50];
+const means200={};M200.forEach(m=>{means200[m]={};demos200.forEach(d=>{if(D200[m][d])means200[m][d]=avg(D200[m][d])})});
+
+new Chart(document.getElementById('demo200Chart'),{
+  type:'bar',
+  data:{labels:['5d','10d','25d','50d'],datasets:M200.map((m,i)=>({
+    label:ML200[i],data:demos200.map(d=>means200[m][d]?+(means200[m][d]).toFixed(1):null),
+    backgroundColor:[C.bl,C.p5k,C.p25k,C.p40k,C.p60k][i]+'cc',
+    borderColor:[C.bl,C.p5k,C.p25k,C.p40k,C.p60k][i],borderWidth:1,borderRadius:4
+  }))},
+  options:mkOpts(0,75,'Mean Success Rate (%)')
+});
+
+// Demo scaling lines
+new Chart(document.getElementById('demo200Lines'),{
+  type:'line',
+  data:{labels:['5','10','25','50'],datasets:M200.filter(m=>m!=='pretrained_40K').map((m,i)=>({
+    label:ML200[M200.indexOf(m)],data:[5,10,25,50].map(d=>means200[m][d]?+(means200[m][d]).toFixed(1):null),
+    borderColor:[C.bl,C.p5k,C.p25k,C.p40k,C.p60k][M200.indexOf(m)],
+    pointBackgroundColor:[C.bl,C.p5k,C.p25k,C.p40k,C.p60k][M200.indexOf(m)],
+    pointRadius:5,borderWidth:2.5,tension:.3,spanGaps:true
+  }))},
+  options:mkOpts(25,65,'Mean SR (%)')
+});
+
+// Pretrain scaling lines
+new Chart(document.getElementById('pretrain200Lines'),{
+  type:'line',
+  data:{labels:['0','5K','25K','60K'],datasets:[5,10,25].map((d,di)=>({
+    label:d+'d',
+    data:['baseline','pretrained_5K','pretrained_25K','pretrained_60K'].map(m=>means200[m]&&means200[m][d]?+(means200[m][d]).toFixed(1):null),
+    borderColor:[C.p5k,C.p25k,C.p60k][di],pointBackgroundColor:[C.p5k,C.p25k,C.p60k][di],
+    pointRadius:5,borderWidth:2.5,tension:.3,spanGaps:true
+  }))},
+  options:mkOpts(30,65,'Mean SR (%)')
+});
+
+// ============================================================
+// CHART 3: DEMO SCALING 66hr
+// ============================================================
+const M66=Object.keys(D66);
+const ML66=['Baseline','5K','25K','40K','60K'];
+const demos66=[5,10,25];
+const means66={};M66.forEach(m=>{means66[m]={};demos66.forEach(d=>{if(D66[m][d])means66[m][d]=avg(D66[m][d])})});
+
+new Chart(document.getElementById('demo66Chart'),{
+  type:'bar',
+  data:{labels:['5d','10d','25d'],datasets:M66.map((m,i)=>({
+    label:ML66[i],data:demos66.map(d=>means66[m][d]?+(means66[m][d]).toFixed(1):null),
+    backgroundColor:[C.bl,C.p5k,C.p25k,C.p40k,C.p60k][i]+'cc',
+    borderColor:[C.bl,C.p5k,C.p25k,C.p40k,C.p60k][i],borderWidth:1,borderRadius:4
+  }))},
+  options:mkOpts(0,70,'Mean Success Rate (%)')
+});
+
+// ============================================================
+// CHART 4: 66hr vs 200hr
+// ============================================================
+const compLabels=['5K 10d','5K 25d','25K 10d','25K 25d','60K 5d','60K 10d','60K 25d'];
+const comp66=[52.3,47.6,46.1,46.1,38.7,47.7,50.5];
+const comp200=[38.4,52.0,58.1,48.4,48.9,53.5,52.3];
+
+new Chart(document.getElementById('compareChart'),{
+  type:'bar',
+  data:{labels:compLabels,datasets:[
+    {label:'66hr',data:comp66,backgroundColor:C.c66+'cc',borderColor:C.c66,borderWidth:1,borderRadius:4},
+    {label:'200hr',data:comp200,backgroundColor:C.c200+'cc',borderColor:C.c200,borderWidth:1,borderRadius:4}
+  ]},
+  options:mkOpts(0,65,'Mean SR (%)')
+});
+
+// ============================================================
+// CHART 5: EXTENDED SEEDS
+// ============================================================
+const extLabels=['S42','S43','S44','S45','S46','S47'];
+new Chart(document.getElementById('extSeedsChart'),{
+  type:'bar',
+  data:{labels:extLabels,datasets:[
+    {label:'Baseline',data:[32.7,24.9,57.9,31.8,37.6,32.9],backgroundColor:C.bl+'cc',borderColor:C.bl,borderWidth:1,borderRadius:4},
+    {label:'60K',data:[46.0,45.2,43.4,44.9,35.0,43.7],backgroundColor:C.p60k+'cc',borderColor:C.p60k,borderWidth:1,borderRadius:4},
+    {label:'75K',data:[56.4,39.0,null,47.1,42.6,null],backgroundColor:C.p75k+'cc',borderColor:C.p75k,borderWidth:1,borderRadius:4}
+  ]},
+  options:mkOpts(0,65,'Success Rate (%)')
+});
+
+// ============================================================
+// CHART 6: SKELETON
+// ============================================================
+const skelSteps=['2.5K','5K','10K','15K','25K','40K','60K'];
+const skelKeys=[2500,5000,10000,15000,25000,40000,60000];
+new Chart(document.getElementById('skeletonChart'),{
+  type:'bar',
+  data:{labels:skelSteps,datasets:[
+    {label:'Skeleton 200hr',data:skelKeys.map(k=>SKEL.s200[k]),backgroundColor:C.skel+'99',borderColor:C.skel,borderWidth:1,borderRadius:4},
+    {label:'Skeleton 66hr',data:skelKeys.map(k=>SKEL.s66[k]),backgroundColor:'#b38cff99',borderColor:'#b38cff',borderWidth:1,borderRadius:4},
+    {label:'Latent Action 200hr',data:skelKeys.map(k=>SKEL.la[k]),backgroundColor:C.la+'99',borderColor:C.la,borderWidth:1,borderRadius:4}
+  ]},
+  options:mkOpts(0,50,'Mean SR (%)')
+});
+
+// ============================================================
+// CHART 7: CHECKPOINT SWEEP
+// ============================================================
+const ckSteps=['2K','4K','6K','8K','10K'];
+new Chart(document.getElementById('ckpt200Chart'),{
+  type:'line',
+  data:{labels:ckSteps,datasets:[
+    {label:'Baseline',data:CK200.bl,borderColor:C.bl,pointBackgroundColor:C.bl,pointRadius:6,borderWidth:2.5,tension:.3},
+    {label:'Pretrained 60K',data:CK200.pt,borderColor:C.p60k,pointBackgroundColor:C.p60k,pointRadius:6,borderWidth:2.5,tension:.3}
+  ]},
+  options:mkOpts(35,70,'SR (%)')
+});
+new Chart(document.getElementById('ckpt66Chart'),{
+  type:'line',
+  data:{labels:ckSteps,datasets:[
+    {label:'Baseline',data:CK66.bl,borderColor:C.bl,pointBackgroundColor:C.bl,pointRadius:6,borderWidth:2.5,tension:.3},
+    {label:'Pretrained 60K',data:CK66.pt,borderColor:C.c66,pointBackgroundColor:C.c66,pointRadius:6,borderWidth:2.5,tension:.3}
+  ]},
+  options:mkOpts(35,70,'SR (%)')
+});
+
+// ============================================================
+// CHART 8: ABLATION
+// ============================================================
+new Chart(document.getElementById('ablationChart'),{
+  type:'bar',
+  data:{labels:ABL.steps,datasets:[
+    {label:'Ablation (A100)',data:ABL.ablation,backgroundColor:C.c66+'cc',borderColor:C.c66,borderWidth:1,borderRadius:4},
+    {label:'Original',data:ABL.original,backgroundColor:C.c200+'cc',borderColor:C.c200,borderWidth:1,borderRadius:4}
+  ]},
+  options:mkOpts(0,65,'SR (%)')
+});
+
+// ============================================================
+// CHART 10: TOP PERFORMERS
+// ============================================================
+new Chart(document.getElementById('topChart'),{
+  type:'bar',
+  data:{labels:TOP.map(t=>t.l),datasets:[{
+    data:TOP.map(t=>t.v),
+    backgroundColor:TOP.map(t=>t.v>=55?'#22c55ecc':t.v>=50?'#6cb4ffcc':t.v>=45?'#ffb86ccc':'#8b8fa3cc'),
+    borderColor:TOP.map(t=>t.v>=55?'#22c55e':t.v>=50?'#6cb4ff':t.v>=45?'#ffb86c':'#8b8fa3'),
+    borderWidth:1,borderRadius:4
+  }]},
+  options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.x.toFixed(1)}% (±${TOP[ctx.dataIndex].r.toFixed(1)}pp)`}}},
+    scales:{x:{min:35,max:62,title:{display:true,text:'Mean SR (%)'},grid:{color:gc},ticks:{callback:v=>v+'%'}},
+      y:{grid:{color:gc},ticks:{font:{size:10}}}}}
+});
+
+// ============================================================
+// TABLES
+// ============================================================
+function mkTable(el,headers,rows){
+  let h='<thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>';
+  rows.forEach(r=>{h+='<tr>'+r.map((c,i)=>{
+    let cls='';
+    if(typeof c==='string'&&c.includes('★'))cls=' class="best"';
+    if(typeof c==='string'&&c.includes('⚠'))cls=' class="warn"';
+    if(typeof c==='string'&&c.includes('†'))cls=' class="flag"';
+    return'<td'+cls+'>'+c+'</td>';
+  }).join('')+'</tr>'});
+  h+='</tbody>';document.getElementById(el).innerHTML=h;
+}
+
+// Vary steps per-seed table
+{const hdr=['S1 Steps','S42','S43','S44','S45','S46','S47','Mean','Range','#Seeds'];
+ const rows=VS.labels.map((l,i)=>[l,...[42,43,44,45,46,47].map(s=>VS.perSeed[s][i]!=null?VS.perSeed[s][i].toFixed(1)+'%':'—'),
+   VS.means[i].toFixed(1)+'%',VS.ranges[i].toFixed(1)+'pp',VS.seeds[i]+'']);
+ mkTable('varyStepsTable',hdr,rows);}
+
+// 200hr demo tables
+function mkDemoTable(el,data,demos_range){
+  const models=Object.keys(data);const labels=['Baseline','5K','25K','40K','60K'];
+  const hdr=['Model','S1 Steps',...demos_range.map((_,i)=>'S'+(42+i)),'Mean','Range','#Seeds'];
+  const rows=[];
+  models.forEach((m,mi)=>{
+    demos_range.forEach(()=>{});
+    const v=data[m];
+    if(!v)return;
+    const vals=v;
+    const mean=avg(vals);const r=rng(vals);const n=vals.length;
+    const row=[labels[mi],m==='baseline'?'0':m.replace('pretrained_','').replace('K','K')];
+    for(let i=0;i<3;i++)row.push(vals[i]!=null?vals[i].toFixed(1)+'%':'—');
+    row.push((n<3?'':'★')+mean.toFixed(1)+'%');
+    row.push(r.toFixed(1)+'pp');
+    row.push(n+(n<3?' †':''));
+    rows.push(row);
+  });
+  return rows;
+}
+
+// Build 200hr tables
+{const models200=['baseline','pretrained_5K','pretrained_25K','pretrained_40K','pretrained_60K'];
+ const labels200=['Baseline','5K','25K','40K','60K'];
+ [5,10,25,50].forEach(d=>{
+   const hdr=['Model','S1','S42','S43','S44','Mean','Range','#'];
+   const rows=[];
+   models200.forEach((m,mi)=>{
+     if(!D200[m]||!D200[m][d])return;
+     const v=D200[m][d];const mean=avg(v);const r=v.length>1?rng(v):0;
+     const row=[labels200[mi],m==='baseline'?'0':m.replace('pretrained_','')];
+     for(let i=0;i<3;i++)row.push(v[i]!=null?v[i].toFixed(1)+'%':'—');
+     row.push(mean.toFixed(1)+'%');row.push(r.toFixed(1)+'pp');row.push(v.length+(v.length<3?' †':''));
+     rows.push(row);
+   });
+   mkTable('t200_'+d+'d',hdr,rows);
+ });}
+
+// Build 66hr tables
+{const models66=['baseline','pretrained_5K','pretrained_25K','pretrained_40K','pretrained_60K'];
+ const labels66=['Baseline','5K','25K','40K','60K'];
+ [5,10,25].forEach(d=>{
+   const hdr=['Model','S1','S42','S43','S44','Mean','Range','#'];
+   const rows=[];
+   models66.forEach((m,mi)=>{
+     if(!D66[m]||!D66[m][d])return;
+     const v=D66[m][d];const mean=avg(v);const r=v.length>1?rng(v):0;
+     const row=[labels66[mi],m==='baseline'?'0':m.replace('pretrained_','')];
+     for(let i=0;i<3;i++)row.push(v[i]!=null?v[i].toFixed(1)+'%':'—');
+     row.push(mean.toFixed(1)+'%');row.push(r.toFixed(1)+'pp');row.push(v.length+(v.length<3?' †':''));
+     rows.push(row);
+   });
+   mkTable('t66_'+d+'d',hdr,rows);
+ });}
+
+// Master table
+{const master=[
+  ['None','5d','0','38.5%','3','8.0pp',''],
+  ['None','10d','0','54.4%','2 †','17.6pp','<3'],
+  ['None','25d','0','41.2%','3','21.2pp',''],
+  ['None','50d','0','36.3%','6','33.0pp',''],
+  ['66hr','5d','60K','38.7%','3','34.4pp',''],
+  ['66hr','10d','0','58.0%','2 †','1.6pp','<3'],
+  ['66hr','10d','5K','52.3%','3','10.4pp',''],
+  ['66hr','10d','25K','46.1%','3','19.2pp',''],
+  ['66hr','10d','60K','47.7%','3','38.8pp',''],
+  ['66hr','25d','5K','47.6%','3','10.0pp',''],
+  ['66hr','25d','25K','46.1%','3','10.4pp',''],
+  ['66hr','25d','40K','50.8%','2 †','18.4pp','<3'],
+  ['66hr','25d','60K','50.5%','3','9.6pp',''],
+  ['200hr','5d','60K','48.9%','3','42.4pp',''],
+  ['200hr','10d','5K','38.4%','3','14.4pp',''],
+  ['200hr','10d','25K','★58.1%','3','6.0pp',''],
+  ['200hr','10d','60K','53.5%','3','28.8pp',''],
+  ['200hr','25d','5K','52.0%','3','8.0pp',''],
+  ['200hr','25d','25K','46.8%','2 †','36.0pp','<3'],
+  ['200hr','25d','40K','53.8%','2 †','4.4pp','<3'],
+  ['200hr','25d','60K','52.3%','3','16.0pp',''],
+  ['200hr','50d','2.5K','34.6%','3','22.0pp',''],
+  ['200hr','50d','5K','46.7%','3','6.2pp',''],
+  ['200hr','50d','10K','36.8%','3','5.3pp',''],
+  ['200hr','50d','15K','42.5%','3','9.4pp',''],
+  ['200hr','50d','25K','44.5%','3','21.2pp',''],
+  ['200hr','50d','35K','36.3%','3','14.5pp',''],
+  ['200hr','50d','40K','42.6%','3','20.7pp',''],
+  ['200hr','50d','50K','42.0%','3','26.0pp',''],
+  ['200hr','50d','60K','43.0%','6','11.0pp',''],
+  ['200hr','50d','65K','34.2%','3','15.0pp',''],
+  ['200hr','50d','70K','41.5%','3','8.5pp',''],
+  ['200hr','50d','75K','42.9%','3','8.1pp','']
+];
+mkTable('masterTable',['Pretrain','Demos','S1 Steps','Mean SR','#Seeds','Range','Flag'],master);}
+
+// Top table
+{const hdr=['Rank','Pretrain','Demos','S1 Steps','Mean SR','#Seeds','Range'];
+ const rows=TOP.map((t,i)=>{
+   const parts=t.l.split(' ');
+   return[(i+1)+'',parts[0],parts[2],parts[1],(i===0?'★':'')+t.v.toFixed(1)+'%','3+',t.r.toFixed(1)+'pp'];
+ });
+ mkTable('topTable',hdr,rows);}
+
+// Key findings
+document.getElementById('findings').innerHTML=`
+<p style="margin-bottom:.8rem"><strong style="color:#22c55e">1. Best overall:</strong> 200hr pretrained_25000 at 10 demos — <strong>58.1%</strong> with only 6.0pp range across 3 seeds.</p>
+<p style="margin-bottom:.8rem"><strong style="color:#6cb4ff">2. 200hr > 66hr at 25K+:</strong> 200hr pretrained_25000 beats 66hr by +12.0pp at 10 demos. More data helps at longer pretraining.</p>
+<p style="margin-bottom:.8rem"><strong style="color:#ff6c8a">3. Pretraining is fragile:</strong> Seed variance explodes with more pretraining. 66hr 60K at 10d has 38.8pp range.</p>
+<p style="margin-bottom:.8rem"><strong style="color:#ffb86c">4. More demos stabilize:</strong> 66hr 60K range shrinks from 38.8pp (10d) to 9.6pp (25d).</p>
+<p style="margin-bottom:.8rem"><strong style="color:#b38cff">5. Baselines are strong at 10d:</strong> Both 66hr (58.0%) and 200hr (54.4%) baselines beat most pretrained conditions.</p>
+<p style="margin-bottom:.8rem"><strong>6. 50d shows inverted-U:</strong> Peak at 5K steps (46.7%), declining with more pretraining.</p>
+<p style="margin-bottom:.8rem"><strong style="color:#ff6c8a">7. Skeleton underperforms:</strong> Best skeleton 34.9% vs latent action 46.0%. Skeleton features don't transfer.</p>
+<p style="margin-bottom:.8rem"><strong>8. No early stopping needed:</strong> Step 10K is peak for both baseline and pretrained at 10 demos.</p>
+`;
+</script>
+</body>
+</html>
