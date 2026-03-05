@@ -48,6 +48,7 @@
 </p>
 
 <div class="nav">
+  <a href="#s0">0. Experiment Design</a>
   <a href="#s1">1. Vary S1 Steps</a>
   <a href="#s2">2. Demo Scaling 200hr</a>
   <a href="#s3">3. Demo Scaling 66hr</a>
@@ -67,6 +68,127 @@
   <div class="stat"><div class="stat-label">Total Eval Runs</div><div class="stat-val">~200</div><div class="stat-sub">JSON files across H100 + A100</div></div>
   <div class="stat"><div class="stat-label">Conditions Tested</div><div class="stat-val">33</div><div class="stat-sub">Latent action (master table)</div></div>
   <div class="stat"><div class="stat-label">Max Seeds</div><div class="stat-val">6</div><div class="stat-sub">Baseline & 60K @ 50d</div></div>
+</div>
+
+<hr class="section-divider">
+
+<!-- SECTION 0: EXPERIMENT DESIGN FLOWCHART -->
+<div id="s0" class="card">
+  <h2>0. Experiment Design — 4 Axes of Variation</h2>
+  <svg viewBox="0 0 1150 720" style="width:100%;max-width:1100px;margin:1rem auto;display:block" xmlns="http://www.w3.org/2000/svg" font-family="Inter,-apple-system,sans-serif">
+    <defs>
+      <marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#8b8fa3"/></marker>
+      <marker id="aho" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#e8590c"/></marker>
+    </defs>
+    <!-- Layer zone backgrounds -->
+    <rect x="0" y="0" width="1150" height="95" rx="8" fill="#1a2332" opacity="0.5"/>
+    <rect x="0" y="110" width="1150" height="100" rx="8" fill="#1a2b1a" opacity="0.4"/>
+    <rect x="0" y="225" width="1150" height="100" rx="8" fill="#2b1a2b" opacity="0.4"/>
+    <rect x="0" y="340" width="1150" height="100" rx="8" fill="#2b1a1a" opacity="0.4"/>
+    <rect x="0" y="455" width="1150" height="100" rx="8" fill="#2b2b1a" opacity="0.4"/>
+    <rect x="0" y="570" width="1150" height="145" rx="8" fill="#1a2b2b" opacity="0.3"/>
+    <!-- Layer labels -->
+    <text x="15" y="30" fill="#8b8fa3" font-size="13" font-weight="600">EXPERIMENT</text>
+    <text x="15" y="50" fill="#8b8fa3" font-size="13" font-weight="600">DESIGN</text>
+    <text x="15" y="155" fill="#8b8fa3" font-size="12">LAYER 1</text>
+    <text x="15" y="170" fill="#6cb4ff" font-size="11">Pretrain Data</text>
+    <text x="15" y="275" fill="#8b8fa3" font-size="12">LAYER 2</text>
+    <text x="15" y="290" fill="#22c55e" font-size="11">Pretrain Steps</text>
+    <text x="15" y="385" fill="#8b8fa3" font-size="12">LAYER 3</text>
+    <text x="15" y="400" fill="#ff6c8a" font-size="11">Robot Demos</text>
+    <text x="15" y="495" fill="#8b8fa3" font-size="12">LAYER 4</text>
+    <text x="15" y="510" fill="#ffb86c" font-size="11">FT Steps</text>
+    <!-- Root node -->
+    <rect x="400" y="25" width="300" height="50" rx="10" fill="#1e3a5f" stroke="#6cb4ff" stroke-width="2"/>
+    <text x="550" y="56" text-anchor="middle" fill="#e1e4ed" font-size="16" font-weight="600">4 Experimental Axes</text>
+    <!-- Arrows root→L1 -->
+    <line x1="550" y1="75" x2="200" y2="130" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="550" y1="75" x2="550" y2="130" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="550" y1="75" x2="900" y2="130" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <!-- Layer 1 nodes -->
+    <rect x="100" y="135" width="200" height="50" rx="8" fill="#5c3d1a" stroke="#ffb86c" stroke-width="1.5"/>
+    <text x="200" y="165" text-anchor="middle" fill="#ffd8a8" font-size="14" font-weight="600">No Pretraining (Baseline)</text>
+    <rect x="450" y="135" width="200" height="50" rx="8" fill="#1a4d2e" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="550" y="165" text-anchor="middle" fill="#b2f2bb" font-size="14" font-weight="600">66hr Ego Data</text>
+    <rect x="800" y="135" width="200" height="50" rx="8" fill="#2d1b69" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="900" y="165" text-anchor="middle" fill="#d0bfff" font-size="14" font-weight="600">200hr Ego Data</text>
+    <!-- Arrows 66hr→L2 -->
+    <line x1="550" y1="185" x2="380" y2="250" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="550" y1="185" x2="550" y2="250" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="550" y1="185" x2="720" y2="250" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <!-- Arrows 200hr→L2 -->
+    <line x1="900" y1="185" x2="800" y2="250" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="900" y1="185" x2="930" y2="250" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="900" y1="185" x2="1060" y2="250" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <!-- Layer 2 nodes (66hr) -->
+    <rect x="320" y="255" width="100" height="40" rx="6" fill="#1a4d2e" stroke="#22c55e" stroke-width="1"/>
+    <text x="370" y="280" text-anchor="middle" fill="#b2f2bb" font-size="13" font-weight="600">2.5K</text>
+    <text x="445" y="280" fill="#8b8fa3" font-size="14">...</text>
+    <rect x="480" y="255" width="100" height="40" rx="6" fill="#1a4d2e" stroke="#22c55e" stroke-width="1"/>
+    <text x="530" y="280" text-anchor="middle" fill="#b2f2bb" font-size="13" font-weight="600">25K</text>
+    <text x="605" y="280" fill="#8b8fa3" font-size="14">...</text>
+    <rect x="640" y="255" width="100" height="40" rx="6" fill="#1a4d2e" stroke="#22c55e" stroke-width="1"/>
+    <text x="690" y="280" text-anchor="middle" fill="#b2f2bb" font-size="13" font-weight="600">75K</text>
+    <!-- Layer 2 nodes (200hr) -->
+    <rect x="740" y="255" width="100" height="40" rx="6" fill="#2d1b69" stroke="#8b5cf6" stroke-width="1"/>
+    <text x="790" y="280" text-anchor="middle" fill="#d0bfff" font-size="13" font-weight="600">2.5K</text>
+    <text x="865" y="280" fill="#8b8fa3" font-size="14">...</text>
+    <rect x="880" y="255" width="100" height="40" rx="6" fill="#2d1b69" stroke="#8b5cf6" stroke-width="1"/>
+    <text x="930" y="280" text-anchor="middle" fill="#d0bfff" font-size="13" font-weight="600">25K</text>
+    <text x="1005" y="280" fill="#8b8fa3" font-size="14">...</text>
+    <rect x="1020" y="255" width="100" height="40" rx="6" fill="#2d1b69" stroke="#8b5cf6" stroke-width="1"/>
+    <text x="1070" y="280" text-anchor="middle" fill="#d0bfff" font-size="13" font-weight="600">75K</text>
+    <!-- Annotation -->
+    <text x="180" y="270" fill="#8b8fa3" font-size="11" font-style="italic">2.5K to 75K</text>
+    <text x="180" y="285" fill="#8b8fa3" font-size="11" font-style="italic">(~13 checkpoints)</text>
+    <!-- Arrows L2→L3 (from 66hr 25K) -->
+    <line x1="530" y1="295" x2="360" y2="365" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="530" y1="295" x2="510" y2="365" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="530" y1="295" x2="660" y2="365" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="530" y1="295" x2="810" y2="365" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <!-- Baseline bypass arrow (dashed orange) -->
+    <line x1="200" y1="185" x2="310" y2="365" stroke="#e8590c" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#aho)"/>
+    <text x="210" y="290" fill="#e8590c" font-size="10" font-style="italic">skips L2</text>
+    <!-- Layer 3 nodes -->
+    <rect x="300" y="370" width="110" height="40" rx="6" fill="#5c1a1a" stroke="#ff6c8a" stroke-width="1"/>
+    <text x="355" y="395" text-anchor="middle" fill="#ffc9c9" font-size="13" font-weight="600">5 demos</text>
+    <rect x="450" y="370" width="110" height="40" rx="6" fill="#5c1a1a" stroke="#ff6c8a" stroke-width="1"/>
+    <text x="505" y="395" text-anchor="middle" fill="#ffc9c9" font-size="13" font-weight="600">10 demos</text>
+    <rect x="600" y="370" width="110" height="40" rx="6" fill="#5c1a1a" stroke="#ff6c8a" stroke-width="1"/>
+    <text x="655" y="395" text-anchor="middle" fill="#ffc9c9" font-size="13" font-weight="600">25 demos</text>
+    <rect x="750" y="370" width="110" height="40" rx="6" fill="#5c1a1a" stroke="#ff6c8a" stroke-width="1"/>
+    <text x="805" y="395" text-anchor="middle" fill="#ffc9c9" font-size="13" font-weight="600">50 demos</text>
+    <!-- Annotation L3 -->
+    <text x="890" y="390" fill="#8b8fa3" font-size="11" font-style="italic">same 4 options</text>
+    <text x="890" y="405" fill="#8b8fa3" font-size="11" font-style="italic">for every step branch</text>
+    <!-- Arrows L3→L4 (from 25 demos) -->
+    <line x1="655" y1="410" x2="410" y2="480" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="655" y1="410" x2="530" y2="480" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="655" y1="410" x2="650" y2="480" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="655" y1="410" x2="770" y2="480" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <line x1="655" y1="410" x2="890" y2="480" stroke="#8b8fa3" stroke-width="1.5" marker-end="url(#ah)"/>
+    <!-- Layer 4 nodes -->
+    <rect x="360" y="485" width="95" height="40" rx="6" fill="#5c3d1a" stroke="#ffb86c" stroke-width="1"/>
+    <text x="407" y="510" text-anchor="middle" fill="#fff3bf" font-size="13" font-weight="600">2K</text>
+    <rect x="480" y="485" width="95" height="40" rx="6" fill="#5c3d1a" stroke="#ffb86c" stroke-width="1"/>
+    <text x="527" y="510" text-anchor="middle" fill="#fff3bf" font-size="13" font-weight="600">4K</text>
+    <rect x="600" y="485" width="95" height="40" rx="6" fill="#5c3d1a" stroke="#ffb86c" stroke-width="1"/>
+    <text x="647" y="510" text-anchor="middle" fill="#fff3bf" font-size="13" font-weight="600">6K</text>
+    <rect x="720" y="485" width="95" height="40" rx="6" fill="#5c3d1a" stroke="#ffb86c" stroke-width="1"/>
+    <text x="767" y="510" text-anchor="middle" fill="#fff3bf" font-size="13" font-weight="600">8K</text>
+    <rect x="840" y="485" width="95" height="40" rx="6" fill="#5c3d1a" stroke="#ffb86c" stroke-width="1"/>
+    <text x="887" y="510" text-anchor="middle" fill="#fff3bf" font-size="13" font-weight="600">10K</text>
+    <!-- Annotation L4 -->
+    <text x="960" y="505" fill="#8b8fa3" font-size="11" font-style="italic">same 5 options</text>
+    <text x="960" y="520" fill="#8b8fa3" font-size="11" font-style="italic">for every demo branch</text>
+    <!-- Summary box -->
+    <rect x="200" y="580" width="750" height="120" rx="10" fill="#1a1d27" stroke="#2a2d3a" stroke-width="1.5"/>
+    <text x="575" y="610" text-anchor="middle" fill="#e1e4ed" font-size="14" font-weight="700">Total Experiment Space</text>
+    <text x="575" y="635" text-anchor="middle" fill="#8b8fa3" font-size="12">3 pretrain data levels  x  ~13 step checkpoints  x  4 demo levels  x  5 FT steps  =  <tspan fill="#ffb86c" font-weight="700">~780 combinations</tspan></text>
+    <text x="575" y="660" text-anchor="middle" fill="#8b8fa3" font-size="12">Baseline path skips pretrain steps: 1  x  4 demo levels  x  5 FT steps  =  <tspan fill="#ffb86c" font-weight="700">+20 combinations</tspan></text>
+    <text x="575" y="685" text-anchor="middle" fill="#6cb4ff" font-size="13" font-weight="600">We evaluated ~33 unique conditions from this space (see Master Table)</text>
+  </svg>
+  <p class="note">One branch is expanded at each layer to show the tree structure. Every step branch has the same 4 demo options, and every demo branch has the same 5 FT step options. Orange dashed line shows baseline bypasses Layer 2.</p>
 </div>
 
 <hr class="section-divider">
