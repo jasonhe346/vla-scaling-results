@@ -129,16 +129,59 @@ td:first-child { text-align: left; font-family: inherit; color: var(--text); fon
     <p><strong>After pretraining:</strong> Similarity jumps to <strong>0.5&ndash;0.7</strong>. The encoder now recognizes shared structure &mdash; objects being manipulated, spatial layouts, grasping motions &mdash; even though the pretraining data has no robot in it. This is the mechanism by which pretraining helps downstream task performance.</p>
   </div>
 
-  <h3>Full similarity table</h3>
+  <h3>Which backbone aligns pretraining data to LIBERO tasks better?</h3>
+  <p>This is the key question: does the Ego-10K or Company pretrained backbone do a better job of bridging the gap between pretraining data and downstream tasks? Each row averages the similarity of <em>both</em> pretraining sources (Ego-10K and Company) to the given LIBERO task.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>LIBERO Task</th>
+        <th>Base SigLIP</th>
+        <th>Ego-10K Backbone</th>
+        <th>Company Backbone</th>
+        <th>Better Backbone</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Drawer</td>
+        <td class="val-neg">&minus;0.006</td>
+        <td class="val-mid">0.634</td>
+        <td class="val-high">0.727</td>
+        <td><strong style="color: var(--green);">Company (+0.09)</strong></td>
+      </tr>
+      <tr>
+        <td>Stove</td>
+        <td class="val-neg">&minus;0.002</td>
+        <td class="val-mid">0.443</td>
+        <td class="val-mid">0.569</td>
+        <td><strong style="color: var(--green);">Company (+0.13)</strong></td>
+      </tr>
+      <tr>
+        <td>Butter</td>
+        <td class="val-mid">0.430</td>
+        <td class="val-mid">0.593</td>
+        <td class="val-mid">0.536</td>
+        <td><strong style="color: var(--accent);">Ego-10K (+0.06)</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size: 0.85rem; color: var(--muted);">Each cell = average of (Ego-10K data &harr; task) and (Company data &harr; task) under that backbone.</p>
+
+  <div class="callout">
+    <p><strong>Reading this table:</strong> The columns compare which <em>pretrained backbone</em> (which set of learned weights) produces better alignment. Company backbone wins on Drawer and Stove. Ego-10K backbone wins on Butter. This is about what the encoder <em>learned</em>, not what the raw images look like.</p>
+  </div>
+
+  <h3>Full pairwise similarity table</h3>
+  <p>Raw cosine similarity between every source pair under each backbone. Note: Ego-10K images are inherently more similar to LIBERO than Company images (household kitchens vs factories) &mdash; that's a property of the data, not the backbone. Compare <em>across columns</em> to see which backbone helps more.</p>
 
   <table>
     <thead>
       <tr>
         <th>Source Pair</th>
         <th>Base SigLIP</th>
-        <th>Ego-10K Pretrained</th>
-        <th>Company Pretrained</th>
-        <th>&Delta; Best &minus; Base</th>
+        <th>Ego-10K Backbone</th>
+        <th>Company Backbone</th>
       </tr>
     </thead>
     <tbody>
@@ -147,80 +190,70 @@ td:first-child { text-align: left; font-family: inherit; color: var(--text); fon
         <td class="val-high">0.794</td>
         <td class="val-high">0.829</td>
         <td class="val-high">0.831</td>
-        <td class="delta-pos">+0.037</td>
       </tr>
       <tr>
         <td>Ego-10K &harr; LIBERO Drawer</td>
         <td class="val-neg">&minus;0.010</td>
         <td class="val-mid">0.642</td>
         <td class="val-high">0.744</td>
-        <td class="delta-pos">+0.754</td>
       </tr>
       <tr>
         <td>Ego-10K &harr; LIBERO Stove</td>
         <td class="val-neg">&minus;0.002</td>
         <td class="val-mid">0.468</td>
         <td class="val-mid">0.610</td>
-        <td class="delta-pos">+0.612</td>
       </tr>
       <tr>
         <td>Ego-10K &harr; LIBERO Butter</td>
         <td class="val-mid">0.459</td>
         <td class="val-mid">0.600</td>
         <td class="val-mid">0.553</td>
-        <td class="delta-pos">+0.141</td>
       </tr>
       <tr>
         <td>Company &harr; LIBERO Drawer</td>
         <td class="val-neg">&minus;0.001</td>
         <td class="val-mid">0.626</td>
         <td class="val-high">0.709</td>
-        <td class="delta-pos">+0.710</td>
       </tr>
       <tr>
         <td>Company &harr; LIBERO Stove</td>
         <td class="val-neg">&minus;0.001</td>
         <td class="val-mid">0.418</td>
         <td class="val-mid">0.528</td>
-        <td class="delta-pos">+0.529</td>
       </tr>
       <tr>
         <td>Company &harr; LIBERO Butter</td>
         <td class="val-mid">0.400</td>
         <td class="val-mid">0.585</td>
         <td class="val-mid">0.518</td>
-        <td class="delta-pos">+0.185</td>
       </tr>
       <tr>
         <td>LIBERO Drawer &harr; LIBERO Stove</td>
         <td class="val-high">0.995</td>
         <td class="val-high">0.718</td>
         <td class="val-high">0.768</td>
-        <td class="delta-neg">&minus;0.227</td>
       </tr>
       <tr>
         <td>LIBERO Drawer &harr; LIBERO Butter</td>
         <td class="val-neg">0.011</td>
         <td class="val-mid">0.685</td>
         <td class="val-high">0.710</td>
-        <td class="delta-pos">+0.699</td>
       </tr>
       <tr>
         <td>LIBERO Stove &harr; LIBERO Butter</td>
         <td class="val-neg">0.014</td>
         <td class="val-mid">0.475</td>
         <td class="val-mid">0.518</td>
-        <td class="delta-pos">+0.504</td>
       </tr>
     </tbody>
   </table>
 
   <h3>Key takeaways</h3>
   <ul>
-    <li><strong>Pretraining data &harr; LIBERO tasks go from ~0 to 0.5&ndash;0.7:</strong> The biggest change. Before pretraining, the encoder sees no connection between egocentric video and robot sim. After, they're significantly aligned.</li>
-    <li><strong>Drawer &harr; Stove drops from 0.995 to 0.72:</strong> Before pretraining, the encoder couldn't tell these tasks apart (both just "rendered kitchen"). After, it distinguishes them by action-relevant features.</li>
-    <li><strong>Company pretraining produces higher alignment to Drawer and Stove</strong> than Ego-10K (0.71 vs 0.63 for Drawer, 0.53 vs 0.42 for Stove). Factory manipulation is structurally closer to tabletop robot tasks.</li>
-    <li><strong>Butter is the exception:</strong> Ego-10K has slightly higher alignment to Butter (0.60) than Company (0.52), and downstream performance on Butter is roughly tied between the two.</li>
+    <li><strong>Before pretraining, the encoder sees no connection</strong> between egocentric video and LIBERO sim (cosine &asymp; 0). After pretraining, they jump to 0.4&ndash;0.7.</li>
+    <li><strong>Company backbone aligns everything to LIBERO better</strong> than Ego-10K backbone for Drawer (+0.09) and Stove (+0.13). Factory manipulation is structurally closer to tabletop robot tasks.</li>
+    <li><strong>Butter is the exception:</strong> Ego-10K backbone has slightly higher alignment to Butter (+0.06), and downstream performance on Butter is roughly tied between the two.</li>
+    <li><strong>Drawer &harr; Stove drops from 0.995 to ~0.72:</strong> Before pretraining, the encoder couldn't tell these tasks apart (both "rendered kitchen"). After, it distinguishes them by action-relevant features.</li>
   </ul>
 </div>
 
